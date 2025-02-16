@@ -165,7 +165,7 @@ internal class Application : IDisposable
 
 			case SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN:
 			case SDL_EventType.SDL_EVENT_MOUSE_BUTTON_UP:
-				io.AddMouseButtonEvent(ev.button.button - 1, ev.button.down);
+				io.AddMouseButtonEvent(GetImGuiMouseButton(ev.button.button), ev.button.down);
 				break;
 
 			case SDL_EventType.SDL_EVENT_MOUSE_WHEEL:
@@ -187,6 +187,14 @@ internal class Application : IDisposable
 				break;
 		}
 	}
+
+	private static int GetImGuiMouseButton(int sdlButton) => sdlButton switch
+	{
+		1 => 0, // left
+		2 => 2, // middle
+		3 => 1, // right
+		_ => 0,
+	};
 
 	private static ImGuiKey GetImGuiKey(SDL_Keycode keycode, SDL_Scancode scancode)
 	{
