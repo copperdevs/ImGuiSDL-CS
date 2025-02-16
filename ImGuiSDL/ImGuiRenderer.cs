@@ -1,12 +1,10 @@
-﻿using static SDL3.SDL;
-
-using ImGuiNET;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Text;
 using System.Runtime.InteropServices;
-using SDL3;
 using System.Numerics;
 using System.Diagnostics;
+using ImGuiNET;
+using static SDL3.SDL;
 
 namespace ImGuiSDL;
 
