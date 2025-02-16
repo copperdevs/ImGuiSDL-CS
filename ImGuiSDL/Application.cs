@@ -77,6 +77,7 @@ internal class Application : IDisposable
     public void Dispose()
     {
 		GC.SuppressFinalize(this);
+		ImGui.DestroyContext(Renderer.Context);
 		Running = false;
 		Renderer.Dispose();
 		SDL_ReleaseWindowFromGPUDevice(Device, Window);
