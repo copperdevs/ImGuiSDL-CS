@@ -55,9 +55,6 @@ internal class Application : IDisposable
 		if (!SDL_ClaimWindowForGPUDevice(Device, Window))
 			throw new Exception($"{nameof(SDL_ClaimWindowForGPUDevice)} Failed: {SDL_GetError()}");
 
-		// setup frames in flight
-		SDL_SetGPUAllowedFramesInFlight(Device, 3);
-
 		// create imgui context
 		var context = ImGui.CreateContext();
 		ImGui.SetCurrentContext(context);
@@ -99,6 +96,7 @@ internal class Application : IDisposable
 			// update delta time
 			ImGui.GetIO().DeltaTime = (float)(timer.Elapsed - time).TotalSeconds;
 			time = timer.Elapsed;
+			Console.WriteLine(ImGui.GetIO().DeltaTime);
 
 			// run update
 			PollEvents();
