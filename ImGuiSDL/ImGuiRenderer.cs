@@ -66,13 +66,13 @@ public unsafe class ImGuiRenderer : IDisposable
 			_ => throw new NotImplementedException()
 		};
 		var shaderExt = shaderFormat switch
-        {
-            SDL_GPUShaderFormat.SDL_GPU_SHADERFORMAT_PRIVATE => "spv",
-            SDL_GPUShaderFormat.SDL_GPU_SHADERFORMAT_SPIRV => "spv",
-            SDL_GPUShaderFormat.SDL_GPU_SHADERFORMAT_DXIL => "dxil",
-            SDL_GPUShaderFormat.SDL_GPU_SHADERFORMAT_MSL => "msl",
+		{
+			SDL_GPUShaderFormat.SDL_GPU_SHADERFORMAT_PRIVATE => "spv",
+			SDL_GPUShaderFormat.SDL_GPU_SHADERFORMAT_SPIRV => "spv",
+			SDL_GPUShaderFormat.SDL_GPU_SHADERFORMAT_DXIL => "dxil",
+			SDL_GPUShaderFormat.SDL_GPU_SHADERFORMAT_MSL => "msl",
 			_ => throw new NotImplementedException()
-        };
+		};
 
 		// create Vertex and Fragment shaders
 		{
@@ -476,8 +476,8 @@ public unsafe class ImGuiRenderer : IDisposable
 
 		~GpuBuffer() => Dispose();
 
-        public void Dispose()
-        {
+		public void Dispose()
+		{
 			GC.SuppressFinalize(this);
 
 			if (Buffer != nint.Zero)
@@ -485,9 +485,9 @@ public unsafe class ImGuiRenderer : IDisposable
 				SDL_ReleaseGPUBuffer(Device, Buffer);
 				Buffer = nint.Zero;
 			}
-        }
+		}
 
-        public void Upload<T>(nint copyPass, in ReadOnlySpan<T> data) where T : unmanaged
+		public void Upload<T>(nint copyPass, in ReadOnlySpan<T> data) where T : unmanaged
 		{
 			var dataSize = Marshal.SizeOf<T>() * data.Length;
 
@@ -525,7 +525,7 @@ public unsafe class ImGuiRenderer : IDisposable
 			fixed (T* src = data)
 			{
 				byte* dst = (byte*)SDL_MapGPUTransferBuffer(Device, transferBuffer, false);
-                System.Buffer.MemoryCopy(src, dst, dataSize, dataSize);
+				System.Buffer.MemoryCopy(src, dst, dataSize, dataSize);
 				SDL_UnmapGPUTransferBuffer(Device, transferBuffer);
 			}
 

@@ -77,8 +77,8 @@ internal class Application : IDisposable
 
 	~Application() => Dispose();
 
-    public void Dispose()
-    {
+	public void Dispose()
+	{
 		GC.SuppressFinalize(this);
 		ImGui.DestroyContext(Renderer.Context);
 		Running = false;
@@ -87,9 +87,9 @@ internal class Application : IDisposable
 		SDL_DestroyWindow(Window);
 		SDL_DestroyGPUDevice(Device);
 		SDL_Quit();
-    }
+	}
 
-    public void Run()
+	public void Run()
 	{
 		Running = true;
 
@@ -198,7 +198,6 @@ internal class Application : IDisposable
 
 	private static ImGuiKey GetImGuiKey(SDL_Keycode keycode, SDL_Scancode scancode)
 	{
-		// Keypad doesn't have individual key values in SDL3
 		switch (scancode)
 		{
 			case SDL_Scancode.SDL_SCANCODE_KP_0: return ImGuiKey.Keypad0;
