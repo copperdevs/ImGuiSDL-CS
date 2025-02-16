@@ -397,9 +397,6 @@ public unsafe class ImGuiRenderer : IDisposable
 	/// </summary>
 	public void Render(nint cmd, nint swapchainTexture, int swapchainWidth, int swapchainHeight, SDL_FColor? clearColor = null)
 	{
-		var lastContext = ImGui.GetCurrentContext();
-		ImGui.SetCurrentContext(Context);
-
 		var io = ImGui.GetIO();
 		io.DisplaySize = new Vector2(swapchainWidth, swapchainHeight) / Scale;
 
@@ -409,10 +406,7 @@ public unsafe class ImGuiRenderer : IDisposable
 		// vaidate data
 		var data = ImGui.GetDrawData();
 		if (data.NativePtr == null || data.TotalVtxCount <= 0)
-		{
-			ImGui.SetCurrentContext(lastContext);
 			return;
-		}
 
 		// build vertex/index buffer lists
 		{
@@ -533,9 +527,6 @@ public unsafe class ImGuiRenderer : IDisposable
 
 			SDL_EndGPURenderPass(pass);
 		}
-
-		// return ImGui context
-		ImGui.SetCurrentContext(lastContext);
 	}
 
 	private class GpuBuffer(nint device, SDL_GPUBufferUsageFlags usage) : IDisposable
