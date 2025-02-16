@@ -7,4 +7,4 @@ An ImGui SDL GPU implementation in C#
 - [SDL3](https://www.libsdl.org/): The SDL3 Libraru
 - [SDL3-CS](https://github.com/flibitijibibo/SDL3-CS/): SDL3 C# Bindings (included as a git submodule)
 
-<img width="200" src="screenshot.png">
+<img width="100%" src="screenshot.png">
