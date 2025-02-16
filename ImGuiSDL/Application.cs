@@ -30,7 +30,7 @@ internal class Application : IDisposable
 	private readonly Stopwatch timer = Stopwatch.StartNew();
 	private TimeSpan time = TimeSpan.Zero;
 
-	public Application(string name, int width, int height)
+	public Application(string name, int width, int height, bool debugMode)
 	{
 		// launch SDL
 		if (!SDL_Init(SDL_InitFlags.SDL_INIT_VIDEO))
@@ -41,7 +41,9 @@ internal class Application : IDisposable
 			SDL_GPUShaderFormat.SDL_GPU_SHADERFORMAT_DXIL | 
 			SDL_GPUShaderFormat.SDL_GPU_SHADERFORMAT_MSL | 
 			SDL_GPUShaderFormat.SDL_GPU_SHADERFORMAT_SPIRV,
-			debug_mode: true, null!);
+			debug_mode: debugMode,
+			name: null!
+		);
 		if (Device == nint.Zero)
 			throw new Exception($"{nameof(SDL_CreateGPUDevice)} Failed: {SDL_GetError()}");
 
