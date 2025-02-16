@@ -2,12 +2,14 @@
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Numerics;
-using System.Diagnostics;
 using ImGuiNET;
 using static SDL3.SDL;
 
 namespace ImGuiSDL;
 
+/// <summary>
+/// Renders ImGui using SDL GPU
+/// </summary>
 public unsafe class ImGuiRenderer : IDisposable
 {
 	/// <summary>
@@ -55,7 +57,16 @@ public unsafe class ImGuiRenderer : IDisposable
 		Window = sdlWindow;
 		Context = imGuiContext;
 
-		// get shader mode
+		// default imgui display size & scale
+		{
+			var display = SDL_GetDisplayForWindow(Window);
+			if (display != nint.Zero)
+				Scale = SDL_GetDisplayContentScale(display);
+			SDL_GetWindowSizeInPixels(Window, out int width, out int height);
+			io.DisplaySize = new Vector2(width, height);
+		}
+
+		// get shader language
 		var driver = SDL_GetGPUDeviceDriver(Device);
 		var shaderFormat = driver switch
 		{
@@ -63,7 +74,7 @@ public unsafe class ImGuiRenderer : IDisposable
 			"vulkan" => SDL_GPUShaderFormat.SDL_GPU_SHADERFORMAT_SPIRV,
 			"direct3d12" => SDL_GPUShaderFormat.SDL_GPU_SHADERFORMAT_DXIL,
 			"metal" => SDL_GPUShaderFormat.SDL_GPU_SHADERFORMAT_MSL,
-			_ => throw new NotImplementedException()
+			_ => throw new NotImplementedException($"Unknown Shader Format for Driver '{driver}'")
 		};
 		var shaderExt = shaderFormat switch
 		{
@@ -71,10 +82,11 @@ public unsafe class ImGuiRenderer : IDisposable
 			SDL_GPUShaderFormat.SDL_GPU_SHADERFORMAT_SPIRV => "spv",
 			SDL_GPUShaderFormat.SDL_GPU_SHADERFORMAT_DXIL => "dxil",
 			SDL_GPUShaderFormat.SDL_GPU_SHADERFORMAT_MSL => "msl",
-			_ => throw new NotImplementedException()
+			_ => throw new NotImplementedException($"Unimplemented Shader Format '{shaderFormat}'")
 		};
 
 		// create Vertex and Fragment shaders
+		// Shaders are stored as Embedded files (see ImGuiSDL.csproj)
 		{
 			var vertexCode = GetEmbeddedBytes($"ImGui.vertex.{shaderExt}");
 			var vertexEntry = Encoding.UTF8.GetBytes("vertex_main");
@@ -145,7 +157,7 @@ public unsafe class ImGuiRenderer : IDisposable
 			var vertexBuffDesc = stackalloc SDL_GPUVertexBufferDescription[1] {
 				new() {
 					slot = 0,
-					pitch = sizeof(float) * 4 + sizeof(uint), // float2 + float2 + ubyte4
+					pitch = (uint)Marshal.SizeOf<ImDrawVert>(),
 					input_rate = SDL_GPUVertexInputRate.SDL_GPU_VERTEXINPUTRATE_VERTEX,
 					instance_step_rate = 0
 				}
@@ -164,7 +176,7 @@ public unsafe class ImGuiRenderer : IDisposable
 					location = 1, 
 					offset = sizeof(float) * 2
 				},
-				// Color: float4
+				// Color: uint (ubyte4)
 				new() { 
 					format = SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_UBYTE4_NORM, 
 					location = 2, 
@@ -275,25 +287,7 @@ public unsafe class ImGuiRenderer : IDisposable
 		=> Dispose();
 
 	/// <summary>
-	/// Begins a new Frame (clears / increments internal data).
-	/// Call this alongside <see cref="ImGui.NewFrame"/>.
-	/// </summary>
-	public void NewFrame()
-	{
-		callbacks.Clear();
-	}
-
-	/// <summary>
-	/// Adds a UserCallback method
-	/// </summary>
-	public void AddUserCallback(UserCallback callback, nint? userData = null)
-	{
-		callbacks.Add(callback);
-		ImGui.GetWindowDrawList().AddCallback(callbacks.Count, userData ?? nint.Zero);
-	}
-
-	/// <summary>
-	/// Destroys the contents of the Renderer
+	/// Destroys the GPU resources used by the Renderer
 	/// </summary>
 	public void Dispose()
 	{
@@ -307,6 +301,26 @@ public unsafe class ImGuiRenderer : IDisposable
 
 		vertexBuffer.Dispose();
 		indexBuffer.Dispose();
+	}
+
+	/// <summary>
+	/// Begins a new Frame (clears / increments internal data).
+	/// Call this alongside <see cref="ImGui.NewFrame"/>.
+	/// </summary>
+	public void NewFrame()
+	{
+		callbacks.Clear();
+	}
+
+	/// <summary>
+	/// Adds a UserCallback method to the current Window Draw List.
+	/// This wraps <see cref="ImDrawListPtr.AddCallback(nint, nint)"> as it 
+	/// doesn't work gracefully with C# by default.
+	/// </summary>
+	public void AddUserCallback(UserCallback callback, nint? userData = null)
+	{
+		callbacks.Add(callback);
+		ImGui.GetWindowDrawList().AddCallback(callbacks.Count, userData ?? nint.Zero);
 	}
 
 	/// <summary>
@@ -467,6 +481,10 @@ public unsafe class ImGuiRenderer : IDisposable
 		}
 	}
 
+	/// <summary>
+	/// Wrapper around an SDL GPU Buffer, used as Vertex and Index buffer share
+	/// a lot of the same details.
+	/// </summary>
 	private class GpuBuffer(nint device, SDL_GPUBufferUsageFlags usage) : IDisposable
 	{
 		public readonly nint Device = device;
@@ -550,6 +568,9 @@ public unsafe class ImGuiRenderer : IDisposable
 		}
 	}
 
+	/// <summary>
+	/// Shaders are stored as Embedded files (see ImGuiSDL.csproj)
+	/// </summary>
 	private static byte[] GetEmbeddedBytes(string file)
 	{
 		var assembly = typeof(ImGuiRenderer).Assembly;

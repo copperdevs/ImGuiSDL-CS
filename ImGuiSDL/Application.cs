@@ -63,16 +63,6 @@ internal class Application : IDisposable
 
 		// create imgui SDL_GPU renderer
 		Renderer = new ImGuiRenderer(Device, Window, context);
-
-		// set renderer scale
-		var display = SDL_GetDisplayForWindow(Window);
-		Renderer.Scale = SDL_GetDisplayContentScale(display);
-
-		// setup imgui properties
-		{
-			SDL_GetWindowSizeInPixels(Window, out width, out height);
-			ImGui.GetIO().DisplaySize = new Vector2(width, height);
-		}
 	}
 
 	~Application() => Dispose();
