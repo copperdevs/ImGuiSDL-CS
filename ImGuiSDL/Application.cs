@@ -96,7 +96,6 @@ internal class Application : IDisposable
 			// update delta time
 			ImGui.GetIO().DeltaTime = (float)(timer.Elapsed - time).TotalSeconds;
 			time = timer.Elapsed;
-			Console.WriteLine(ImGui.GetIO().DeltaTime);
 
 			// run update
 			PollEvents();
