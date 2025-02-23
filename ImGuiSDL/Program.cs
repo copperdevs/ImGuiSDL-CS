@@ -11,11 +11,10 @@ namespace ImGuiSDL;
 public static unsafe class Program
 {
     private static SDL3Window window = null!;
-    private static SDLRenderer renderer = null!;
 
-    private static ImGuiRenderer Renderer = null!;
+    private static ImGuiRenderer renderer = null!;
 
-    private static SDL_GPUDevice* Device = null!;
+    private static SDL_GPUDevice* device = null!;
 
     public static void Main()
     {
@@ -31,7 +30,6 @@ public static unsafe class Program
         };
 
         window = Window.Create<SDL3Window>(options);
-        renderer = window.GetRenderer();
 
         window.OnLoad += OnLoad;
         window.OnUpdate += OnUpdate;
@@ -46,37 +44,37 @@ public static unsafe class Program
 
     private static void OnLoad()
     {
-        Device = SDLAPI.CreateGpuDevice(
+        device = SDLAPI.CreateGpuDevice(
             SDL_GPUShaderFormat.SDL_GPU_SHADERFORMAT_DXIL | SDL_GPUShaderFormat.SDL_GPU_SHADERFORMAT_MSL | SDL_GPUShaderFormat.SDL_GPU_SHADERFORMAT_SPIRV,
             true,
             (byte*)null);
 
-        if (Device == null)
+        if (device == null)
             throw new Exception($"{nameof(SDLAPI.CreateGpuDevice)} Failed: {SDLAPI.GetError()}");
 
-        if (!SDLAPI.ClaimWindowForGpuDevice(Device, window.GetNativeWindow()))
+        if (!SDLAPI.ClaimWindowForGpuDevice(device, window.GetNativeWindow()))
             throw new Exception($"{nameof(SDLAPI.ClaimWindowForGpuDevice)} Failed: {SDLAPI.GetError()}");
 
         var context = ImGui.CreateContext();
         ImGui.SetCurrentContext(context);
 
-        Renderer = new ImGuiRenderer(Device, window.GetNativeWindow(), context);
+        renderer = new ImGuiRenderer(device, window.GetNativeWindow(), context);
     }
 
     private static void OnUpdate()
     {
         if (ImGui.GetIO().WantTextInput && !SDLAPI.TextInputActive(window.GetNativeWindow()))
             SDLAPI.StartTextInput(window.GetNativeWindow());
-        
+
         else if (!ImGui.GetIO().WantTextInput && SDLAPI.TextInputActive(window.GetNativeWindow()))
             SDLAPI.StopTextInput(window.GetNativeWindow());
-        
+
         ImGui.GetIO().DeltaTime = Time.DeltaTimeAsFloat;
     }
 
     private static void OnRender()
     {
-        Renderer.NewFrame();
+        renderer.NewFrame();
 
         ImGui.NewFrame();
         if (ImGui.Begin("Hello World"))
@@ -88,17 +86,17 @@ public static unsafe class Program
         ImGui.ShowDemoWindow();
         ImGui.EndFrame();
 
-        Renderer.Render(new SDL_FColor { r = 0.1f, g = 0.05f, b = 0.08f, a = 1.0f });
+        renderer.Render(new SDL_FColor { r = 0.1f, g = 0.05f, b = 0.08f, a = 1.0f });
     }
 
     private static void OnClose()
     {
-        ImGui.DestroyContext(Renderer.Context);
-        SDLAPI.ReleaseWindowFromGpuDevice(Device, window.GetNativeWindow());
-        SDLAPI.DestroyGpuDevice(Device);
+        ImGui.DestroyContext(renderer.Context);
+        SDLAPI.ReleaseWindowFromGpuDevice(device, window.GetNativeWindow());
+        SDLAPI.DestroyGpuDevice(device);
     }
-    
-    
+
+
     private static void HandleEvent(EventType type, SDL_Event @event)
     {
         var io = ImGui.GetIO();
@@ -108,7 +106,7 @@ public static unsafe class Program
             // mouse input:
 
             case EventType.MouseMotion:
-                io.MousePos = new Vector2(@event.motion.x, @event.motion.y) / Renderer.Scale;
+                io.MousePos = new Vector2(@event.motion.x, @event.motion.y) / renderer.Scale;
                 break;
 
             case EventType.MouseButtonDown:
