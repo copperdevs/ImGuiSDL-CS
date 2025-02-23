@@ -71,14 +71,6 @@ public unsafe class ImGuiRenderer : IDisposable
             io.DisplaySize = new Vector2(width, height);
         }
 
-        // {
-        //     var display = SDL_GetDisplayForWindow(Window);
-        //     if (display != nint.Zero)
-        //         Scale = SDL_GetDisplayContentScale(display);
-        //     SDL_GetWindowSizeInPixels(Window, out int width, out int height);
-        //     io.DisplaySize = new Vector2(width, height);
-        // }
-
         // get shader language
         var driver = SDLAPI.GetGpuDeviceDriver(Device);
         var shaderFormat = driver switch
@@ -102,10 +94,10 @@ public unsafe class ImGuiRenderer : IDisposable
         // Shaders are stored as Embedded files (see ImGuiSDL.csproj)
         {
             var vertexCode = GetEmbeddedBytes($"ImGui.vertex.{shaderExt}");
-            var vertexEntry = Encoding.UTF8.GetBytes("vertex_main");
+            var vertexEntry = "vertex_main"u8.ToArray();
 
             var fragmentCode = GetEmbeddedBytes($"ImGui.fragment.{shaderExt}");
-            var fragmentEntry = Encoding.UTF8.GetBytes("fragment_main");
+            var fragmentEntry = "fragment_main"u8.ToArray();
 
             fixed (byte* vertexCodePtr = vertexCode)
             fixed (byte* vertexEntryPtr = vertexEntry)
@@ -159,7 +151,7 @@ public unsafe class ImGuiRenderer : IDisposable
                 new()
                 {
                     format = SDLAPI.GetGpuSwapchainTextureFormat(Device, Window),
-                    blend_state = new()
+                    blend_state = new SDL_GPUColorTargetBlendState
                     {
                         src_color_blendfactor = SDL_GPUBlendFactor.SDL_GPU_BLENDFACTOR_SRC_ALPHA,
                         dst_color_blendfactor = SDL_GPUBlendFactor.SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
@@ -213,7 +205,7 @@ public unsafe class ImGuiRenderer : IDisposable
             {
                 vertex_shader = vertexShader,
                 fragment_shader = fragmentShader,
-                vertex_input_state = new()
+                vertex_input_state = new SDL_GPUVertexInputState
                 {
                     vertex_buffer_descriptions = vertexBuffDesc,
                     num_vertex_buffers = 1,
@@ -221,13 +213,13 @@ public unsafe class ImGuiRenderer : IDisposable
                     num_vertex_attributes = 3,
                 },
                 primitive_type = SDL_GPUPrimitiveType.SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
-                rasterizer_state = new()
+                rasterizer_state = new SDL_GPURasterizerState
                 {
                     cull_mode = SDL_GPUCullMode.SDL_GPU_CULLMODE_NONE,
                 },
-                multisample_state = new(),
-                depth_stencil_state = new(),
-                target_info = new()
+                multisample_state = new SDL_GPUMultisampleState(),
+                depth_stencil_state = new SDL_GPUDepthStencilState(),
+                target_info = new SDL_GPUGraphicsPipelineTargetInfo
                 {
                     num_color_targets = 1,
                     color_target_descriptions = colorTargetDesc

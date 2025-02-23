@@ -12,7 +12,6 @@
     <PackageReference Include="CopperDevs.Windowing" Version="1.2.0" />
     <PackageReference Include="CopperDevs.Windowing.SDL3" Version="1.3.0" />
     <PackageReference Include="ImGui.NET" Version="1.91.6.1" />
-    <ProjectReference Include="..\SDL3-CS\SDL3\SDL3.Core.csproj" />
   </ItemGroup>
 
   <!-- Default Shader Content -->
@@ -20,28 +19,6 @@
     <EmbeddedResource Include="$(ProjectDir)Shaders/Compiled/**" Visible="false">
       <LogicalName>%(Filename)%(Extension)</LogicalName>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <!-- Copy SDL3 libs to bin -->
-  <ItemGroup>
-    <Content Include="$(ProjectDir)Libs\win-x64\**" Visible="false">
-      <CopyToOutputDirectory Condition="$([MSBuild]::IsOSPlatform('Windows'))">PreserveNewest</CopyToOutputDirectory>
-      <PackagePath>runtimes\win-x64\native</PackagePath>
-      <Pack>True</Pack>
-      <Link>%(Filename)%(Extension)</Link>
-    </Content>
-    <Content Include="$(ProjectDir)Libs\linux-x64\**" Visible="false">
-      <CopyToOutputDirectory Condition="$([MSBuild]::IsOSPlatform('Linux'))">PreserveNewest</CopyToOutputDirectory>
-      <PackagePath>runtimes\linux-x64\native</PackagePath>
-      <Pack>True</Pack>
-      <Link>%(Filename)%(Extension)</Link>
-    </Content>
-    <Content Include="$(ProjectDir)Libs\osx\**" Visible="false">
-      <CopyToOutputDirectory Condition="$([MSBuild]::IsOSPlatform('OSX'))">PreserveNewest</CopyToOutputDirectory>
-      <PackagePath>runtimes\osx\native</PackagePath>
-      <Pack>True</Pack>
-      <Link>%(Filename)%(Extension)</Link>
-    </Content>
   </ItemGroup>
 
 </Project>
