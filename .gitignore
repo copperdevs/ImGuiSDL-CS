@@ -16,6 +16,4 @@ temp-notes.txt
 .DS_Store
 imgui.ini
 .vscode
-CopperDevs.Windowing.sln.DotSettings.user
-WindowingTesting.sln.DotSettings.user
-scripts/*.txt
+ImGuiSDL-CS.sln.DotSettings.user
