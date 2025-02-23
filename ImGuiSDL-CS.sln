@@ -5,9 +5,10 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImGuiSDL", "ImGuiSDL\ImGuiSDL.csproj", "{5CEC8902-8DBF-490F-AFE7-697A04AC607A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SDL3-CS", "SDL3-CS", "{BC876963-25D7-4AE2-9005-6AF7056BABC1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDL3.Core", "SDL3-CS\SDL3\SDL3.Core.csproj", "{B2FBF757-E0FA-4F5C-9D96-5A3708C869F0}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "repo", "repo", "{821186F9-5C38-4830-B5FC-9FB300FD6077}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,12 +23,7 @@ Global
 		{5CEC8902-8DBF-490F-AFE7-697A04AC607A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CEC8902-8DBF-490F-AFE7-697A04AC607A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CEC8902-8DBF-490F-AFE7-697A04AC607A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B2FBF757-E0FA-4F5C-9D96-5A3708C869F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B2FBF757-E0FA-4F5C-9D96-5A3708C869F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B2FBF757-E0FA-4F5C-9D96-5A3708C869F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B2FBF757-E0FA-4F5C-9D96-5A3708C869F0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{B2FBF757-E0FA-4F5C-9D96-5A3708C869F0} = {BC876963-25D7-4AE2-9005-6AF7056BABC1}
 	EndGlobalSection
 EndGlobal

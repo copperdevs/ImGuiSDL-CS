@@ -2,8 +2,10 @@
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Numerics;
+using CopperDevs.Windowing.SDL3;
 using ImGuiNET;
-using static SDL3.SDL;
+using SDL;
+using static SDL.SDL3.SDL;
 
 namespace ImGuiSDL;
 
@@ -20,12 +22,12 @@ public unsafe class ImGuiRenderer : IDisposable
 	/// <summary>
 	/// SDL GPU Device
 	/// </summary>
-	public readonly nint Device;
+	public readonly SDL_GPUDevice* Device;
 
 	/// <summary>
 	/// SDL Window
 	/// </summary>
-	public readonly nint Window;
+	public readonly SDL_Window* Window;
 
 	/// <summary>
 	/// ImGui Context
@@ -49,7 +51,7 @@ public unsafe class ImGuiRenderer : IDisposable
 	private ushort[] indices = [];
 	private readonly List<UserCallback> callbacks = [];
 
-	public ImGuiRenderer(nint sdlGpuDevice, nint sdlWindow, nint imGuiContext)
+	public ImGuiRenderer(SDL_GPUDevice* sdlGpuDevice, SDL_Window* sdlWindow, nint imGuiContext)
 	{
 		var io = ImGui.GetIO();
 
@@ -328,7 +330,7 @@ public unsafe class ImGuiRenderer : IDisposable
 	/// </summary>
 	public void Render(SDL_FColor? clearColor = null)
 	{
-		var cmd = SDL_AcquireGPUCommandBuffer(Device);
+		var cmd = SDLAPI.AcquireGpuCommandBuffer(Device);
 
 		if (SDL_WaitAndAcquireGPUSwapchainTexture(cmd, Window, out var swapchain, out var width, out var height))
 		{
